@@ -1,0 +1,12 @@
+[package]
+name = "string_reader"
+version = "0.0.0"
+authors = ["Fabian Vilers <fabian.vilers@dev-one.com>"]
+edition = "2024"
+description = "A package to read string character by character, or by line, or to the end"
+readme = "README.md"
+repository = "https://github.com/fvilers/string_reader"
+license = "MIT"
+keywords = ["string", "reader"]
+
+[dependencies]
