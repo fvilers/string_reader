@@ -1,3 +1,7 @@
 {
+  "files.exclude": {
+    "**/target": true,
+    "**/Cargo.lock": true
+  },
   "cSpell.words": ["fabian", "vilers"]
 }
