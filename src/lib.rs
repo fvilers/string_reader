@@ -16,7 +16,7 @@ impl StringReader {
     }
 
     pub fn read(&mut self) -> Option<&char> {
-        self.position += 1;
+        self.advance();
         self.chars.get(self.position - 1)
     }
 
@@ -43,6 +43,12 @@ impl StringReader {
         self.chars
             .get(initial_position..self.position - 1)
             .map(|c| c.iter().collect())
+    }
+
+    pub fn advance(&mut self) {
+        if self.position <= self.chars.len() {
+            self.position += 1;
+        }
     }
 }
 
@@ -162,5 +168,13 @@ mod tests {
             reader.read_until(|c| *c == ' '),
             Some(String::from("world!"))
         );
+    }
+
+    #[test]
+    fn advance_should_increment_position() {
+        let mut reader = StringReader::new(String::from("hello"));
+        reader.advance();
+
+        assert_eq!(reader.read(), Some(&'e'));
     }
 }
