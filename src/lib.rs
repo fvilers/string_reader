@@ -21,17 +21,7 @@ impl StringReader {
     }
 
     pub fn read_line(&mut self) -> Option<String> {
-        let initial_position = self.position;
-
-        while let Some(c) = self.read() {
-            if *c == '\n' {
-                break;
-            }
-        }
-
-        self.chars
-            .get(initial_position..self.position - 1)
-            .map(|c| c.iter().collect())
+        self.read_until(|c| *c == '\n')
     }
 
     pub fn read_to_end(&mut self) -> Option<String> {
@@ -39,6 +29,20 @@ impl StringReader {
 
         self.position = self.chars.len() + 1;
         self.chars.get(index).map(|c| c.iter().collect())
+    }
+
+    pub fn read_until<F: Fn(&char) -> bool>(&mut self, predicate: F) -> Option<String> {
+        let initial_position = self.position;
+
+        while let Some(c) = self.read() {
+            if predicate(c) {
+                break;
+            }
+        }
+
+        self.chars
+            .get(initial_position..self.position - 1)
+            .map(|c| c.iter().collect())
     }
 }
 
@@ -129,5 +133,34 @@ mod tests {
 
         // cSpell:disable-next-line
         assert_eq!(reader.read_to_end(), Some(String::from("ello")));
+    }
+
+    #[test]
+    fn read_until_should_return_an_empty_string_for_empty_string() {
+        let mut reader = StringReader::new(String::from(""));
+
+        assert_eq!(reader.read_until(|c| *c == 'e'), Some(String::from("")));
+    }
+
+    #[test]
+    fn read_until_should_return_the_whole_string_if_predicate_does_not_match() {
+        let hello = String::from("hello");
+        let mut reader = StringReader::new(&hello);
+
+        assert_eq!(reader.read_until(|c| *c == 'x'), Some(hello));
+        assert_eq!(reader.read_until(|c| *c == 'x'), None);
+    }
+
+    #[test]
+    fn read_until_should_return_the_string_before_the_matched_predicate() {
+        let mut reader = StringReader::new(String::from("hello world!"));
+        reader.read();
+
+        // cSpell:disable-next-line
+        assert_eq!(reader.read_until(|c| *c == ' '), Some(String::from("ello")));
+        assert_eq!(
+            reader.read_until(|c| *c == ' '),
+            Some(String::from("world!"))
+        );
     }
 }
