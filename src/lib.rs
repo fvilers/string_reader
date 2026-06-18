@@ -11,6 +11,10 @@ impl StringReader {
         }
     }
 
+    pub fn position(&self) -> usize {
+        self.position
+    }
+
     pub fn peek(&self) -> Option<&char> {
         self.chars.get(self.position)
     }
@@ -175,6 +179,17 @@ mod tests {
         let mut reader = StringReader::new(String::from("hello"));
         reader.advance();
 
-        assert_eq!(reader.read(), Some(&'e'));
+        assert_eq!(reader.position(), 1);
+    }
+
+    #[test]
+    fn advance_should_not_increment_position_if_at_end() {
+        let mut reader = StringReader::new(String::from("hello"));
+        reader.read_to_end();
+
+        let end = reader.position();
+        reader.advance();
+
+        assert_eq!(reader.position(), end);
     }
 }
